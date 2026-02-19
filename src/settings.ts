@@ -1,12 +1,12 @@
 /**
- * This is the name of the platform that users will use to register the plugin in the Homebridge config.json
+ * Platform name users register in Homebridge config.json.
  */
-export const PLATFORM_NAME = 'HomebridgeCreateCeilingFan';
+export const PLATFORM_NAME = 'HomebridgeCreateFan';
 
 /**
- * This must match the name of your plugin as defined the package.json
+ * Must match the "name" field in package.json.
  */
-export const PLUGIN_NAME = 'homebridge-create-ceiling-fan';
+export const PLUGIN_NAME = 'homebridge-create-fan';
 
 /** Default polling interval in seconds */
 export const DEFAULT_POLLING_INTERVAL = 15;

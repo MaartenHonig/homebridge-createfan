@@ -21,7 +21,7 @@ import type {
 
 export type { PlatformAccessoryContext };
 
-export class HomebridgeCreateCeilingFan implements DynamicPlatformPlugin {
+export class CreateFanPlatform implements DynamicPlatformPlugin {
   public readonly Service: typeof Service;
   public readonly Characteristic: typeof Characteristic;
   public readonly accessories: Map<string, PlatformAccessory<PlatformAccessoryContext>> = new Map();

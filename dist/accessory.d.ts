@@ -1,5 +1,5 @@
 import { PlatformAccessory } from 'homebridge';
-import { HomebridgeCreateCeilingFan } from './platform.js';
+import { CreateFanPlatform } from './platform.js';
 import type { PlatformAccessoryContext } from './types.js';
 export declare class FanAccessory {
     private readonly platform;
@@ -22,7 +22,7 @@ export declare class FanAccessory {
     private state;
     private lastUpdateTime;
     private readonly UPDATE_DEBOUNCE_MS;
-    constructor(platform: HomebridgeCreateCeilingFan, accessory: PlatformAccessory<PlatformAccessoryContext>);
+    constructor(platform: CreateFanPlatform, accessory: PlatformAccessory<PlatformAccessoryContext>);
     private connect;
     private scheduleReconnect;
     private startPolling;

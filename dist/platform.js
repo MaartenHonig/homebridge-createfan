@@ -2,7 +2,7 @@ import { PLATFORM_NAME, PLUGIN_NAME, DEFAULT_POLLING_INTERVAL } from './settings
 import { FanAccessory } from './accessory.js';
 import { resolveSecret } from './secrets.js';
 import { buildDeviceConfig } from './mapping.js';
-export class HomebridgeCreateCeilingFan {
+export class CreateFanPlatform {
     log;
     config;
     api;

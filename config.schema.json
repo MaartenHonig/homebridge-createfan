@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "HomebridgeCreateCeilingFan",
+  "pluginAlias": "HomebridgeCreateFan",
   "pluginType": "platform",
   "singular": true,
   "schema": {
@@ -9,7 +9,7 @@
         "title": "Name",
         "type": "string",
         "required": true,
-        "default": "Create Ceiling Fan"
+        "default": "CREATE Fan"
       },
       "pollingIntervalSeconds": {
         "title": "Polling Interval (seconds)",
@@ -60,7 +60,7 @@
             },
             "key": {
               "type": "string",
-              "title": "Tuya Device Key",
+              "title": "Tuya Local Key",
               "description": "Required when secrets mode is 'inline'."
             },
             "idEnv": {
@@ -71,7 +71,7 @@
             "keyEnv": {
               "type": "string",
               "title": "Key Environment Variable",
-              "description": "Name of env var containing the Tuya device key (secrets mode 'env')."
+              "description": "Name of env var containing the Tuya local key (secrets mode 'env')."
             },
             "deviceKey": {
               "type": "string",

@@ -5,7 +5,7 @@ import {
   PlatformAccessory,
   Service,
 } from 'homebridge';
-import { HomebridgeCreateCeilingFan } from './platform.js';
+import { CreateFanPlatform } from './platform.js';
 import type { PlatformAccessoryContext, DpsMapping, FeatureFlags } from './types.js';
 import { percentToStep, stepToPercent } from './mapping.js';
 import {
@@ -53,7 +53,7 @@ export class FanAccessory {
   private readonly UPDATE_DEBOUNCE_MS = 200;
 
   constructor(
-    private readonly platform: HomebridgeCreateCeilingFan,
+    private readonly platform: CreateFanPlatform,
     private readonly accessory: PlatformAccessory<PlatformAccessoryContext>,
   ) {
     this.Characteristic = this.platform.Characteristic;

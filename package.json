@@ -1,21 +1,25 @@
 {
-  "name": "homebridge-create-ceiling-fan",
-  "displayName": "Hombridge Create Ceiling Fan",
+  "name": "homebridge-create-fan",
+  "displayName": "Homebridge CREATE Fan",
   "type": "module",
-  "version": "2.0.12-beta.0",
+  "version": "0.1.0",
   "private": false,
-  "description": "Free the full potential of your ceiling fan with Homebridge",
-  "author": "Thibaut Mottet",
+  "description": "Control your CREATE ceiling fan from Apple HomeKit via Homebridge",
+  "author": "Maarten",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/moifort/homebridge-create-fan.git"
+    "url": "https://github.com/YOUR_USERNAME/homebridge-create-fan.git"
   },
   "bugs": {
-    "url": "https://github.com/moifort/homebridge-create-fan/issues"
+    "url": "https://github.com/YOUR_USERNAME/homebridge-create-fan/issues"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "create",
+    "ceiling-fan",
+    "tuya",
+    "homekit"
   ],
   "main": "dist/index.js",
   "engines": {
@@ -26,23 +30,21 @@
     "build": "rimraf ./dist && tsc",
     "lint": "eslint . --max-warnings=0",
     "watch": "npm run build && npm link && nodemon",
-    "deploy": "npm run build && npm version patch && npm publish",
-    "deploy:beta": "npm run build && npm version prepatch --preid beta && npm publish --tag=beta"
+    "test": "node scripts/test-mapping.js",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "tuyapi": "7.7.0",
-    "homebridge-lib": "7.1.3"
+    "tuyapi": "7.7.0"
   },
   "devDependencies": {
-    "@eslint/js": "9.19.0",
-    "@types/eslint__js": "8.42.3",
-    "@types/node": "22.10.10",
-    "eslint": "9.19.0",
+    "@eslint/js": "9.28.0",
+    "@types/node": "22.15.0",
+    "eslint": "9.28.0",
     "homebridge": "2.0.0-beta.27",
     "nodemon": "3.1.9",
     "rimraf": "6.0.1",
     "ts-node": "10.9.2",
-    "typescript": "5.6.3",
-    "typescript-eslint": "8.21.0"
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.32.0"
   }
 }

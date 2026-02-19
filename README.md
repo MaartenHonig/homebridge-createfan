@@ -1,6 +1,6 @@
-# CREATE Ceiling Fan – Homebridge Plugin
+# homebridge-create-fan
 
-Control your CREATE Ceiling Fan from Apple HomeKit via Homebridge.
+Control your CREATE ceiling fan from Apple HomeKit via Homebridge.
 
 ## Features
 
@@ -14,12 +14,12 @@ Control your CREATE Ceiling Fan from Apple HomeKit via Homebridge.
 
 ## Installation
 
-Go to the Homebridge UI → Plugins → search for `homebridge-create-ceiling-fan` → Install.
+Go to the Homebridge UI → Plugins → search for `homebridge-create-fan` → Install.
 
 Or install manually:
 
 ```bash
-npm install -g homebridge-create-ceiling-fan
+npm install -g homebridge-create-fan
 ```
 
 ---
@@ -130,14 +130,14 @@ Where `20` = light on, `60` = fan power off, `62` = fan speed at step 3.
 
 ---
 
-## Configuration Examples
+## Configuration
 
-### Minimal (backwards compatible)
+### Minimal
 
 ```json
 {
-  "platform": "HomebridgeCreateCeilingFan",
-  "name": "Create Ceiling Fan",
+  "platform": "HomebridgeCreateFan",
+  "name": "CREATE Fan",
   "devices": [
     {
       "name": "Living Room Fan",
@@ -152,8 +152,8 @@ Where `20` = light on, `60` = fan power off, `62` = fan speed at step 3.
 
 ```json
 {
-  "platform": "HomebridgeCreateCeilingFan",
-  "name": "Create Ceiling Fan",
+  "platform": "HomebridgeCreateFan",
+  "name": "CREATE Fan",
   "pollingIntervalSeconds": 15,
   "devices": [
     {
@@ -195,8 +195,8 @@ Where `20` = light on, `60` = fan power off, `62` = fan speed at step 3.
 
 ```json
 {
-  "platform": "HomebridgeCreateCeilingFan",
-  "name": "Create Ceiling Fan",
+  "platform": "HomebridgeCreateFan",
+  "name": "CREATE Fan",
   "secrets": {
     "mode": "env"
   },
@@ -222,8 +222,8 @@ This keeps credentials completely out of your Homebridge config:
 
 ```json
 {
-  "platform": "HomebridgeCreateCeilingFan",
-  "name": "Create Ceiling Fan",
+  "platform": "HomebridgeCreateFan",
+  "name": "CREATE Fan",
   "secrets": {
     "mode": "storage",
     "storageFile": "create-fan-secrets.json"
@@ -273,8 +273,6 @@ When you tap a button, it turns on briefly and then switches itself off. The plu
 | `lightTempCycleDps` | DPS to pulse (write true then false) to advance one step |
 | `lightTempCycleMethod` | `"dpsPulse"` (default) or `"lightToggle"` (turns light off/on to advance) |
 
-If you have a status dump showing your device's DPS values, you can determine which approach your fan uses.
-
 ---
 
 ## DPS Reference
@@ -301,18 +299,9 @@ Your fan may use different DPS numbers. Use the API Explorer method (Step 8 abov
 - **Direction values**: The plugin sends `"forward"` / `"reverse"` strings by default. Some devices may use `true`/`false` or numeric values — adjust via the mapping if needed.
 - **Single local connection**: Most Tuya devices only accept one local connection at a time. Close the Smart Life app on your phone when using this plugin, and don't run other local Tuya integrations on the same device simultaneously.
 
----
+## Credits
 
-## Upgrading from v2.x
-
-1. Your existing minimal config (name, id, key per device) still works with **zero changes**.
-2. The legacy "Toggle Light" switch has been removed. Use the Lightbulb service or Temp preset buttons instead.
-3. If you had `withToggle: true`, that option is no longer needed.
-4. After upgrading, you may need to remove and re-add the accessory in HomeKit if cached services look wrong.
-
-## Thanks
+Inspired by [moifort/homebridge-create-fan](https://github.com/moifort/homebridge-create-fan).
 
 - [tuyapi](https://github.com/codetheweb/tuyapi)
 - [tinytuya](https://github.com/jasonacox/tinytuya)
-- @marsuboss
-- Original plugin by [moifort](https://github.com/moifort)

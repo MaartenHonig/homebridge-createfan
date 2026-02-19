@@ -1,10 +1,7 @@
 {
-  "watch": [
-    "src"
-  ],
+  "watch": ["src"],
   "ext": "ts",
-  "ignore": [],
-  "exec": "tsc && homebridge -U ./test/hbConfig -D",
+  "exec": "homebridge -D -I -P .",
   "signal": "SIGTERM",
   "env": {
     "NODE_OPTIONS": "--trace-warnings"

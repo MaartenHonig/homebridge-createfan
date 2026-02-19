@@ -1,7 +1,7 @@
 import type { API, Characteristic, DynamicPlatformPlugin, Logging, PlatformAccessory, PlatformConfig, Service } from 'homebridge';
 import type { DeviceConfig, PlatformAccessoryContext, SecretsConfig } from './types.js';
 export type { PlatformAccessoryContext };
-export declare class HomebridgeCreateCeilingFan implements DynamicPlatformPlugin {
+export declare class CreateFanPlatform implements DynamicPlatformPlugin {
     readonly log: Logging;
     readonly config: PlatformConfig;
     readonly api: API;

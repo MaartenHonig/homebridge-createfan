@@ -1,5 +1,5 @@
 /**
- * Types for the CREATE Ceiling Fan Homebridge plugin.
+ * Types for the homebridge-create-fan plugin.
  */
 export {};
 //# sourceMappingURL=types.js.map

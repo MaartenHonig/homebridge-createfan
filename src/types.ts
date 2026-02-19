@@ -1,5 +1,5 @@
 /**
- * Types for the CREATE Ceiling Fan Homebridge plugin.
+ * Types for the homebridge-create-fan plugin.
  */
 
 // ── Secrets ──────────────────────────────────────────────────────────
@@ -51,15 +51,10 @@ export interface FeatureFlags {
 
 export interface DeviceConfig {
   name: string;
-  /** Tuya device ID – required when secrets.mode === "inline" */
   id?: string;
-  /** Tuya device key – required when secrets.mode === "inline" */
   key?: string;
-  /** Env var name for device ID – used when secrets.mode === "env" */
   idEnv?: string;
-  /** Env var name for device key – used when secrets.mode === "env" */
   keyEnv?: string;
-  /** Stable key to look up in storage file if name doesn't match */
   deviceKey?: string;
   model?: string;
   mapping?: Partial<DpsMapping>;
