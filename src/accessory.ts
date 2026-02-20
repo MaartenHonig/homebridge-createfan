@@ -100,7 +100,9 @@ export class FanAccessory {
       this.lightService =
         this.accessory.getService(this.platform.Service.Lightbulb) ||
         this.accessory.addService(this.platform.Service.Lightbulb);
+      this.lightService.displayName = `${this.deviceName} Light`;
       this.lightService.setCharacteristic(this.Characteristic.Name, `${this.deviceName} Light`);
+      this.lightService.setCharacteristic(this.Characteristic.ConfiguredName, `${this.deviceName} Light`);
 
       this.lightService
         .getCharacteristic(this.Characteristic.On)
@@ -393,7 +395,9 @@ export class FanAccessory {
       const svc =
         this.accessory.getServiceById(this.platform.Service.Switch, subtype) ||
         this.accessory.addService(this.platform.Service.Switch, name, subtype);
+      svc.displayName = name;
       svc.setCharacteristic(this.Characteristic.Name, name);
+      svc.setCharacteristic(this.Characteristic.ConfiguredName, name);
 
       const currentStep = step; // capture for closure
       svc
@@ -476,7 +480,9 @@ export class FanAccessory {
       const svc =
         this.accessory.getServiceById(this.platform.Service.Switch, subtype) ||
         this.accessory.addService(this.platform.Service.Switch, name, subtype);
+      svc.displayName = name;
       svc.setCharacteristic(this.Characteristic.Name, name);
+      svc.setCharacteristic(this.Characteristic.ConfiguredName, name);
 
       const targetIndex = i;
       svc
@@ -549,7 +555,9 @@ export class FanAccessory {
       const svc =
         this.accessory.getServiceById(this.platform.Service.Switch, subtype) ||
         this.accessory.addService(this.platform.Service.Switch, label, subtype);
+      svc.displayName = label;
       svc.setCharacteristic(this.Characteristic.Name, label);
+      svc.setCharacteristic(this.Characteristic.ConfiguredName, label);
 
       const timerMinutes = minutes;
       svc
