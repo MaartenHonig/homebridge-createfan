@@ -2,7 +2,7 @@
 
 ## 0.1.0
 
-Initial release. Inspired by [moifort/homebridge-create-fan](https://github.com/moifort/homebridge-create-fan).
+Initial release.
 
 ### Features
 - **FanV2 service** with power, speed (discrete steps mapped to 0–100%), and optional rotation direction.

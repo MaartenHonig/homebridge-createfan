@@ -301,7 +301,5 @@ Your fan may use different DPS numbers. Use the API Explorer method (Step 8 abov
 
 ## Credits
 
-Inspired by [moifort/homebridge-create-fan](https://github.com/moifort/homebridge-create-fan).
-
 - [tuyapi](https://github.com/codetheweb/tuyapi)
 - [tinytuya](https://github.com/jasonacox/tinytuya)
