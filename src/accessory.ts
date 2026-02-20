@@ -102,6 +102,7 @@ export class FanAccessory {
         this.accessory.addService(this.platform.Service.Lightbulb);
       this.lightService.displayName = `${this.deviceName} Light`;
       this.lightService.setCharacteristic(this.Characteristic.Name, `${this.deviceName} Light`);
+      this.lightService.addOptionalCharacteristic(this.Characteristic.ConfiguredName);
       this.lightService.setCharacteristic(this.Characteristic.ConfiguredName, `${this.deviceName} Light`);
 
       this.lightService
@@ -139,13 +140,9 @@ export class FanAccessory {
       this.isConnected = true;
       this.isConnecting = false;
       this.reconnectDelay = INITIAL_RECONNECT_DELAY;
-      // Small delay before first refresh to avoid ECONNRESET
-      setTimeout(() => {
-        if (this.isConnected) {
-          this.refreshState();
-          this.startPolling();
-        }
-      }, 2000);
+      // No initial refresh needed — device sends state via data event on connect.
+      // Calling refresh() too soon causes ECONNRESET on some devices.
+      this.startPolling();
     });
 
     this.tuyaDevice.on('disconnected', () => {
@@ -397,6 +394,7 @@ export class FanAccessory {
         this.accessory.addService(this.platform.Service.Switch, name, subtype);
       svc.displayName = name;
       svc.setCharacteristic(this.Characteristic.Name, name);
+      svc.addOptionalCharacteristic(this.Characteristic.ConfiguredName);
       svc.setCharacteristic(this.Characteristic.ConfiguredName, name);
 
       const currentStep = step; // capture for closure
@@ -482,6 +480,7 @@ export class FanAccessory {
         this.accessory.addService(this.platform.Service.Switch, name, subtype);
       svc.displayName = name;
       svc.setCharacteristic(this.Characteristic.Name, name);
+      svc.addOptionalCharacteristic(this.Characteristic.ConfiguredName);
       svc.setCharacteristic(this.Characteristic.ConfiguredName, name);
 
       const targetIndex = i;
@@ -557,6 +556,7 @@ export class FanAccessory {
         this.accessory.addService(this.platform.Service.Switch, label, subtype);
       svc.displayName = label;
       svc.setCharacteristic(this.Characteristic.Name, label);
+      svc.addOptionalCharacteristic(this.Characteristic.ConfiguredName);
       svc.setCharacteristic(this.Characteristic.ConfiguredName, label);
 
       const timerMinutes = minutes;
