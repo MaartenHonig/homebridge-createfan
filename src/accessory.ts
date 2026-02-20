@@ -7,7 +7,6 @@ import {
 } from 'homebridge';
 import { CreateFanPlatform } from './platform.js';
 import type { PlatformAccessoryContext, DpsMapping, FeatureFlags } from './types.js';
-import { percentToStep, stepToPercent } from './mapping.js';
 import {
   MOMENTARY_RESET_DELAY,
   DPS_PULSE_DELAY,
@@ -29,6 +28,7 @@ export class FanAccessory {
   // Services
   private readonly fanService: Service;
   private lightService?: Service;
+  private speedSwitches: Service[] = [];
   private tempSwitches: Service[] = [];
   private timerSwitches: Service[] = [];
 
@@ -83,11 +83,11 @@ export class FanAccessory {
       .onGet(() => this.state.fanActive ? 1 : 0)
       .onSet(this.setFanActive.bind(this));
 
-    this.fanService
-      .getCharacteristic(this.Characteristic.RotationSpeed)
-      .setProps({ minValue: 0, maxValue: 100, minStep: Math.round(100 / (this.mapping.fanSpeedMax - this.mapping.fanSpeedMin + 1)) })
-      .onGet(() => stepToPercent(this.state.fanSpeed, this.mapping.fanSpeedMin, this.mapping.fanSpeedMax))
-      .onSet(this.setFanSpeed.bind(this));
+    // Remove RotationSpeed if previously cached (we use speed buttons instead)
+    const existingRotation = this.fanService.getCharacteristic(this.Characteristic.RotationSpeed);
+    if (existingRotation) {
+      this.fanService.removeCharacteristic(existingRotation);
+    }
 
     if (this.features.enableDirection && this.mapping.fanDirectionDps !== undefined) {
       this.fanService
@@ -115,6 +115,9 @@ export class FanAccessory {
       }
     }
 
+    // ── Speed Preset Buttons ────────────────────────────────────
+    this.setupSpeedButtons();
+
     // ── Temperature Preset Buttons ───────────────────────────────
     this.setupTempButtons();
 
@@ -135,8 +138,13 @@ export class FanAccessory {
       this.isConnected = true;
       this.isConnecting = false;
       this.reconnectDelay = INITIAL_RECONNECT_DELAY;
-      this.refreshState();
-      this.startPolling();
+      // Small delay before first refresh to avoid ECONNRESET
+      setTimeout(() => {
+        if (this.isConnected) {
+          this.refreshState();
+          this.startPolling();
+        }
+      }, 2000);
     });
 
     this.tuyaDevice.on('disconnected', () => {
@@ -230,6 +238,9 @@ export class FanAccessory {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dps = data.dps as unknown as Record<string, any>;
 
+    // Log raw DPS for mapping discovery
+    this.log.debug(`[${this.deviceName}]`, `Raw DPS: ${JSON.stringify(dps)}`);
+
     const now = Date.now();
     if (now - this.lastUpdateTime < this.UPDATE_DEBOUNCE_MS) {
       this.applyDps(dps, false);
@@ -260,10 +271,7 @@ export class FanAccessory {
     if (fanSpeed !== undefined) {
       this.state.fanSpeed = Number(fanSpeed);
       if (pushToHomeKit) {
-        this.fanService.updateCharacteristic(
-          this.Characteristic.RotationSpeed,
-          stepToPercent(this.state.fanSpeed, m.fanSpeedMin, m.fanSpeedMax),
-        );
+        this.updateSpeedButtons();
       }
     }
 
@@ -337,37 +345,86 @@ export class FanAccessory {
   // ════════════════════════════════════════════════════════════════
 
   private setFanActive(value: CharacteristicValue) {
-    // BUG FIX: use the incoming value directly instead of toggling
     const active = value === 1;
     this.state.fanActive = active;
     this.sendCommand(this.mapping.fanPowerDps, active);
     this.log.debug(`[${this.deviceName}]`, `setFanActive → ${active ? 'ACTIVE' : 'INACTIVE'}`);
-  }
 
-  private setFanSpeed(value: CharacteristicValue) {
-    const percent = value as number;
-    const step = percentToStep(percent, this.mapping.fanSpeedMin, this.mapping.fanSpeedMax);
-    this.state.fanSpeed = step;
-    this.sendCommand(this.mapping.fanSpeedDps, step);
-
-    // If fan was off and user sets speed, turn it on
-    if (!this.state.fanActive && percent > 0) {
-      this.state.fanActive = true;
-      this.sendCommand(this.mapping.fanPowerDps, true);
-      this.fanService.updateCharacteristic(this.Characteristic.Active, 1);
+    // Update speed buttons to reflect state
+    if (!active) {
+      this.updateSpeedButtons();
     }
-
-    this.log.debug(`[${this.deviceName}]`, `setFanSpeed → ${percent}% (step ${step})`);
   }
 
   private setFanDirection(value: CharacteristicValue) {
     const dir = value as number;
     this.state.fanDirection = dir;
-    // Send as boolean or number depending on device. Most Tuya fans use bool or string.
     if (this.mapping.fanDirectionDps !== undefined) {
       this.sendCommand(this.mapping.fanDirectionDps, dir === 1 ? 'reverse' : 'forward');
     }
     this.log.debug(`[${this.deviceName}]`, `setFanDirection → ${dir === 0 ? 'CW' : 'CCW'}`);
+  }
+
+  // ════════════════════════════════════════════════════════════════
+  //  SPEED PRESET BUTTONS
+  // ════════════════════════════════════════════════════════════════
+
+  private setupSpeedButtons() {
+    const min = this.mapping.fanSpeedMin;
+    const max = this.mapping.fanSpeedMax;
+
+    for (let step = min; step <= max; step++) {
+      const name = `Speed ${step}`;
+      const subtype = `speed-preset-${step}`;
+      const svc =
+        this.accessory.getServiceById(this.platform.Service.Switch, subtype) ||
+        this.accessory.addService(this.platform.Service.Switch, name, subtype);
+      svc.setCharacteristic(this.Characteristic.Name, name);
+
+      const currentStep = step; // capture for closure
+      svc
+        .getCharacteristic(this.Characteristic.On)
+        .onGet(() => this.state.fanActive && this.state.fanSpeed === currentStep)
+        .onSet((value: CharacteristicValue) => {
+          if (value) {
+            this.setSpeedStep(currentStep);
+          } else {
+            // User turned off active speed button → turn fan off
+            if (this.state.fanSpeed === currentStep && this.state.fanActive) {
+              this.state.fanActive = false;
+              this.sendCommand(this.mapping.fanPowerDps, false);
+              this.fanService.updateCharacteristic(this.Characteristic.Active, 0);
+              this.log.debug(`[${this.deviceName}]`, `Speed ${currentStep} toggled off → fan OFF`);
+            }
+            this.updateSpeedButtons();
+          }
+        });
+
+      this.speedSwitches.push(svc);
+    }
+  }
+
+  private setSpeedStep(step: number) {
+    // Turn fan on if needed
+    if (!this.state.fanActive) {
+      this.state.fanActive = true;
+      this.sendCommand(this.mapping.fanPowerDps, true);
+      this.fanService.updateCharacteristic(this.Characteristic.Active, 1);
+    }
+
+    this.state.fanSpeed = step;
+    this.sendCommand(this.mapping.fanSpeedDps, step);
+    this.updateSpeedButtons();
+    this.log.debug(`[${this.deviceName}]`, `setSpeed → step ${step}`);
+  }
+
+  private updateSpeedButtons() {
+    const min = this.mapping.fanSpeedMin;
+    for (let i = 0; i < this.speedSwitches.length; i++) {
+      const step = min + i;
+      const isActive = this.state.fanActive && this.state.fanSpeed === step;
+      this.speedSwitches[i].updateCharacteristic(this.Characteristic.On, isActive);
+    }
   }
 
   // ════════════════════════════════════════════════════════════════

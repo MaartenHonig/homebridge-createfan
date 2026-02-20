@@ -12,6 +12,7 @@ export declare class FanAccessory {
     private readonly deviceName;
     private readonly fanService;
     private lightService?;
+    private speedSwitches;
     private tempSwitches;
     private timerSwitches;
     private isConnecting;
@@ -33,8 +34,10 @@ export declare class FanAccessory {
     private parseDirection;
     private sendCommand;
     private setFanActive;
-    private setFanSpeed;
     private setFanDirection;
+    private setupSpeedButtons;
+    private setSpeedStep;
+    private updateSpeedButtons;
     private setLightOn;
     private setupTempButtons;
     private activateTempPreset;
