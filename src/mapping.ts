@@ -12,7 +12,7 @@ const DEFAULT_MAPPING: DpsMapping = {
   lightTempModeDps: 23,
   lightTempValues: [0, 500, 1000],  // warm, neutral, cool (DPS 23 values)
   timerDps: 64,
-  timerValues: [59, 119, 239],      // minutes (≈1h, 2h, 4h)
+  timerValues: [60, 120, 240, 540],   // minutes (1h, 2h, 4h, 9h)
 };
 
 export function resolveMapping(partial?: Partial<DpsMapping>): DpsMapping {

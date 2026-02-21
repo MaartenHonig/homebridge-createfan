@@ -136,6 +136,8 @@ export class FanAccessory {
         this.log.info(`[${this.deviceName}]`, 'Connecting…');
         try {
             await this.tuyaDevice.find();
+            // Brief pause after discovery — some devices reject immediate connections
+            await this.delay(1000);
             await this.tuyaDevice.connect();
         }
         catch (err) {
@@ -501,12 +503,24 @@ export class FanAccessory {
      * "Toggle Light". Avoids orphaned services in HomeKit cache.
      */
     cleanupLegacyServices() {
-        // The old code added a Switch service without a subtype for "Toggle Light".
-        // We now use subtyped switches for temp/timer, so remove the un-subtyped one.
-        const services = this.accessory.services.filter((s) => s.UUID === this.platform.Service.Switch.UUID &&
-            !s.subtype);
-        for (const svc of services) {
-            this.log.info(`[${this.deviceName}]`, 'Removing legacy toggle switch service');
+        // Remove un-subtyped switches (legacy "Toggle Light")
+        // Remove old timer subtypes (59, 119, 239 → now 60, 120, 240, 540)
+        const knownSubtypes = new Set();
+        // Collect current valid subtypes
+        const m = this.mapping;
+        for (let s = m.fanSpeedMin; s <= m.fanSpeedMax; s++) {
+            knownSubtypes.add(`speed-preset-${s}`);
+        }
+        for (let i = 0; i < m.lightTempValues.length; i++) {
+            knownSubtypes.add(`temp-preset-${i}`);
+        }
+        for (const val of m.timerValues) {
+            knownSubtypes.add(`timer-preset-${val}`);
+        }
+        const switchUUID = this.platform.Service.Switch.UUID;
+        const toRemove = this.accessory.services.filter((s) => s.UUID === switchUUID && (!s.subtype || !knownSubtypes.has(s.subtype)));
+        for (const svc of toRemove) {
+            this.log.info(`[${this.deviceName}]`, `Removing orphaned switch: ${svc.displayName} (${svc.subtype ?? 'no subtype'})`);
             this.accessory.removeService(svc);
         }
     }
